@@ -17,7 +17,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.modeshape.common.text.Inflector;
 
-import com.squareup.okhttp.OkHttpClient;
+ import com.squareup.okhttp.OkHttpClient;
 
 public class Main {
 	static String mUrl;
@@ -31,12 +31,9 @@ public class Main {
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
-		// mUrl = args[0];
-		// mPackage = args[1];
-		// mBaseType = args[2];
-		mPackage = "com.signnow.android.api.model";
-		mBaseType = "Folder";
-		mUrl = "https://dl.dropboxusercontent.com/u/733674/signnow/folder.json";
+		 mUrl = args[0];
+		 mPackage = args[1];
+		 mBaseType = args[2];
 		mTypes = new HashMap<String, NewType>();
 		mInflector = new Inflector();
 
@@ -183,6 +180,9 @@ public class Main {
 		public NewType() {
 			imports = new HashSet<String>();
 			imports.add("com.google.gson.annotations.SerializedName");
+			imports.add("android.os.Parcel");
+			imports.add("android.os.Parcelable");
+			imports.add("java.util.ArrayList");
 			members = new HashMap<String, Member>();
 		}
 
@@ -193,7 +193,8 @@ public class Main {
 				sBuilder.append("import ").append(s).append(";\n");
 			}
 			sBuilder.append("\n\n");
-			sBuilder.append("public class ").append(name).append("{\n\n");
+			sBuilder.append("public class ").append(name)
+					.append(" implements Parcelable{\n\n");
 
 			// Insert the static fields to define the json names
 			// eg. private static final String FIELD_FIRST_NAME = "first_name";
@@ -210,7 +211,8 @@ public class Main {
 			// annotation for Gson
 			for (Map.Entry<String, Member> entry : members.entrySet()) {
 				Member member = entry.getValue();
-				sBuilder.append("    @SerializedName(" + member.fieldName + ")\n");
+				sBuilder.append("    @SerializedName(" + member.fieldName
+						+ ")\n");
 				sBuilder.append(
 						"    private " + member.type + " " + member.name + ";")
 						.append("\n");
@@ -227,17 +229,94 @@ public class Main {
 						.append(nameNoPrefix).append(") {\n        ")
 						.append(member.name).append(" = ").append(nameNoPrefix)
 						.append(";").append("\n    }\n\n");
-				
+
 				String setPrefix = "get";
-				if(member.type.equals("boolean")){
+				if (member.type.equals("boolean")) {
 					setPrefix = "is";
 				}
-				sBuilder.append("    public ").append(member.type).append(" ").append(setPrefix).append(methodName)
-				.append("() {\n        return ").append(member.name).append(";\n    }\n\n");
+				sBuilder.append("    public ").append(member.type).append(" ")
+						.append(setPrefix).append(methodName)
+						.append("() {\n        return ").append(member.name)
+						.append(";\n    }\n\n");
 			}
+
+			sBuilder.append(generateParcelableCode());
 
 			sBuilder.append("\n}");
 			return sBuilder.toString();
+		}
+
+		private String generateParcelableCode() {
+			StringBuilder sb = new StringBuilder();
+
+			sb.append("    public ").append(name).append("(Parcel in) {\n");
+			for (Map.Entry<String, Member> entry : members.entrySet()) {
+				Member member = entry.getValue();
+				
+				sb.append("        ");
+				sb.append(member.name).append(" = ");
+				if (member.type.startsWith("List")) {
+					String type  = StringUtils.removeEnd(StringUtils.removeStart(member.type, "List<"),">");
+
+					sb.append("new ArrayList<").append(type).append(">();");
+					
+					sb.append("in.readTypedList(").append(member.name)
+							.append(", ").append(type)
+							.append(".CREATOR);");
+				} else if (member.type.equals("boolean")) {
+					sb.append("in.readInt() == 1 ? true: false;");
+				} else if (mTypes.containsKey(member.type)) {
+					sb.append("in.readParcelable(").append(member.type)
+							.append(".class.getClassLoader());");
+				} else {
+					sb.append("in.read")
+							.append(StringUtils.capitalize(member.type))
+							.append("();");
+
+				}
+				sb.append("\n");
+			}
+			sb.append("    }\n\n");
+
+			sb.append("    @Override\n    public int describeContents() {\n        return 0;\n    }\n\n");
+
+			sb.append("    public static final Parcelable.Creator<").append(
+					name);
+			sb.append("> CREATOR = new Parcelable.Creator<").append(name);
+			sb.append(">() {\n        public ").append(name);
+			sb.append(" createFromParcel(Parcel in) {\n            return new ")
+					.append(name);
+			sb.append("(in);\n        }\n\n");
+
+			sb.append("        public ").append(name);
+			sb.append("[] newArray(int size) {\n            return new ")
+					.append(name);
+			sb.append("[size];\n        }\n    };\n\n");
+
+			
+			
+			sb.append("    @Override\n");
+			sb.append("    public void writeToParcel(Parcel dest, int flags) {\n");
+			for (Map.Entry<String, Member> entry : members.entrySet()) {
+				Member member = entry.getValue();
+				sb.append("        ");
+				if (member.type.startsWith("List")) {
+					sb.append("dest.writeTypedList(").append(member.name).append(");\n");
+				} else if (member.type.equals("boolean")) {
+					sb.append("dest.writeInt(").append(member.name).append(" ? 1 : 0);");
+				} else if (mTypes.containsKey(member.type)) {
+					sb.append("		dest.writeParcelable(").append(member.name).append(", flags);\n");
+				} else {
+					sb.append("dest.write")
+							.append(StringUtils.capitalize(member.type))
+							.append("(").append(member.name).append(");");
+
+				}
+				sb.append("\n");
+			}
+			sb.append("    }\n\n");
+			
+			return sb.toString();
 		}
 	}
 
