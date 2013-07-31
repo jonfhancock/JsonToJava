@@ -16,10 +16,11 @@ e.g. java -jar JsonToJava http://example.com/folder.json com.example.api.model F
 It will create the folder structure for the package you provide, then it will read the json at the url you provide, and output java classes into the folder locally.
 
 Each class will implement Parcelable for easy passing of information in Android.
+Each class will have a default empty constructor.
 The members of each class will follow Android naming conventions with an "m" prefix and camel case.
 Each member will have a corresponding static final String that relates it to it's json counterpart
 Each member will have a @SerializedName annotation for very easy Gson parsing.
-
+If a member called "mId" or "mUniqueId" is found, then equals and hashcode will be overridden so comparisons are made on the id.
 
 <h3>What I want this tool to do in the future in no particular order</h3>
 <ul>
