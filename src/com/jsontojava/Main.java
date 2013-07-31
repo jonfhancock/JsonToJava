@@ -17,7 +17,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.modeshape.common.text.Inflector;
 
- import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.OkHttpClient;
 
 public class Main {
 	static String mUrl;
@@ -31,9 +31,9 @@ public class Main {
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
-		 mUrl = args[0];
-		 mPackage = args[1];
-		 mBaseType = args[2];
+		mUrl = args[0];
+		mPackage = args[1];
+		mBaseType = args[2];
 		mTypes = new HashMap<String, NewType>();
 		mInflector = new Inflector();
 
@@ -72,7 +72,7 @@ public class Main {
 		for (String s : keys) {
 			Object current = obj.opt(s);
 			Member m = generateMember(s, current);
-			currentType.members.put(m.name, m);
+			currentType.members.add(m);
 			if (current instanceof JSONArray) {
 				currentType.imports.add("java.util.List");
 
@@ -104,7 +104,7 @@ public class Main {
 					NewType subClass = generateClass((JSONObject) element,
 							className);
 					type.imports.addAll(subClass.imports);
-					type.members.putAll(subClass.members);
+					type.members.addAll(subClass.members);
 				}
 
 			}
@@ -113,7 +113,7 @@ public class Main {
 
 			if (mTypes.containsKey(className)) {
 				mTypes.get(className).imports.addAll(type.imports);
-				mTypes.get(className).members.putAll(type.members);
+				mTypes.get(className).members.addAll(type.members);
 			} else {
 				mTypes.put(className, type);
 
@@ -126,10 +126,10 @@ public class Main {
 				NewType subClass = generateClass((JSONObject) current,
 						className);
 				type.imports.addAll(subClass.imports);
-				type.members.putAll(subClass.members);
+				type.members.addAll(subClass.members);
 				if (mTypes.containsKey(className)) {
 					mTypes.get(className).imports.addAll(type.imports);
-					mTypes.get(className).members.putAll(type.members);
+					mTypes.get(className).members.addAll(type.members);
 				} else {
 					mTypes.put(className, type);
 
@@ -175,7 +175,7 @@ public class Main {
 		public String name;
 		public String pack;
 		public Set<String> imports;
-		public Map<String, Member> members;
+		public Set<Member> members;
 
 		public NewType() {
 			imports = new HashSet<String>();
@@ -183,7 +183,7 @@ public class Main {
 			imports.add("android.os.Parcel");
 			imports.add("android.os.Parcelable");
 			imports.add("java.util.ArrayList");
-			members = new HashMap<String, Member>();
+			members = new HashSet<Member>();
 		}
 
 		public String toString() {
@@ -196,10 +196,10 @@ public class Main {
 			sBuilder.append("public class ").append(name)
 					.append(" implements Parcelable{\n\n");
 
+			
 			// Insert the static fields to define the json names
 			// eg. private static final String FIELD_FIRST_NAME = "first_name";
-			for (Map.Entry<String, Member> entry : members.entrySet()) {
-				Member member = entry.getValue();
+			for (Member member : members) {
 				sBuilder.append(
 						"    private static final String " + member.fieldName
 								+ " = \"" + member.jsonField + "\";").append(
@@ -209,8 +209,7 @@ public class Main {
 
 			// Insert the actual member names including the SerializedName
 			// annotation for Gson
-			for (Map.Entry<String, Member> entry : members.entrySet()) {
-				Member member = entry.getValue();
+			for (Member member : members) {
 				sBuilder.append("    @SerializedName(" + member.fieldName
 						+ ")\n");
 				sBuilder.append(
@@ -219,50 +218,65 @@ public class Main {
 			}
 			sBuilder.append("\n\n");
 
+			sBuilder.append("    public ").append(name).append("(){\n\n").append("    }\n\n");
+
+			
 			// Insert the accessor methods for the members;
-			for (Map.Entry<String, Member> entry : members.entrySet()) {
-				Member member = entry.getValue();
-				String methodName = StringUtils.removeStart(member.name, "m");
-				String nameNoPrefix = mInflector.camelCase(methodName, false);
-				sBuilder.append("    public void set").append(methodName)
-						.append("(").append(member.type).append(" ")
-						.append(nameNoPrefix).append(") {\n        ")
-						.append(member.name).append(" = ").append(nameNoPrefix)
-						.append(";").append("\n    }\n\n");
+			for (Member member : members) {
+				sBuilder.append(member.getSetter());
+				sBuilder.append(member.getGetter());
 
-				String setPrefix = "get";
-				if (member.type.equals("boolean")) {
-					setPrefix = "is";
-				}
-				sBuilder.append("    public ").append(member.type).append(" ")
-						.append(setPrefix).append(methodName)
-						.append("() {\n        return ").append(member.name)
-						.append(";\n    }\n\n");
 			}
-
+			
+			sBuilder.append(generateExtraMethods());
+			
 			sBuilder.append(generateParcelableCode());
 
 			sBuilder.append("\n}");
 			return sBuilder.toString();
 		}
 
+		private String generateExtraMethods() {
+			String type = StringUtils.removeEnd(
+					StringUtils.removeStart(name, "List<"), ">");
+			for (Member member : members) {
+				if (member.name.equalsIgnoreCase("mId")
+						|| member.name.equalsIgnoreCase("mUniqueId")) {
+					StringBuilder sb = new StringBuilder();
+
+					sb.append("    @Override\n");
+					sb.append("    public boolean equals(Object obj){\n");
+					sb.append("        if(obj instanceof ").append(type).append("){\n");
+					sb.append("        		return ((").append(type).append(") obj).").append(member.getGetterSignature()).append(".equals(").append(member.name).append(");\n");
+					sb.append("        }\n");
+					sb.append("        return false;\n");
+					sb.append("    }\n\n");
+					sb.append("    @Override\n");
+					sb.append("    public int hashCode(){\n");
+					sb.append("        return ").append(member.name).append(".hashCode();\n");
+					sb.append("    }\n\n");
+					return sb.toString();
+				}
+			}
+			return "";
+		}
+
 		private String generateParcelableCode() {
 			StringBuilder sb = new StringBuilder();
 
 			sb.append("    public ").append(name).append("(Parcel in) {\n");
-			for (Map.Entry<String, Member> entry : members.entrySet()) {
-				Member member = entry.getValue();
-				
+			for (Member member : members) {
+
 				sb.append("        ");
 				sb.append(member.name).append(" = ");
 				if (member.type.startsWith("List")) {
-					String type  = StringUtils.removeEnd(StringUtils.removeStart(member.type, "List<"),">");
+					String type = StringUtils.removeEnd(
+							StringUtils.removeStart(member.type, "List<"), ">");
 
-					sb.append("new ArrayList<").append(type).append(">();");
-					
-					sb.append("in.readTypedList(").append(member.name)
-							.append(", ").append(type)
-							.append(".CREATOR);");
+					sb.append("new ArrayList<").append(type).append(">();\n");
+
+					sb.append("        in.readTypedList(").append(member.name)
+							.append(", ").append(type).append(".CREATOR);");
 				} else if (member.type.equals("boolean")) {
 					sb.append("in.readInt() == 1 ? true: false;");
 				} else if (mTypes.containsKey(member.type)) {
@@ -293,19 +307,19 @@ public class Main {
 					.append(name);
 			sb.append("[size];\n        }\n    };\n\n");
 
-			
-			
 			sb.append("    @Override\n");
 			sb.append("    public void writeToParcel(Parcel dest, int flags) {\n");
-			for (Map.Entry<String, Member> entry : members.entrySet()) {
-				Member member = entry.getValue();
+			for (Member member : members) {
 				sb.append("        ");
 				if (member.type.startsWith("List")) {
-					sb.append("dest.writeTypedList(").append(member.name).append(");\n");
+					sb.append("dest.writeTypedList(").append(member.name)
+							.append(");");
 				} else if (member.type.equals("boolean")) {
-					sb.append("dest.writeInt(").append(member.name).append(" ? 1 : 0);");
+					sb.append("dest.writeInt(").append(member.name)
+							.append(" ? 1 : 0);");
 				} else if (mTypes.containsKey(member.type)) {
-					sb.append("		dest.writeParcelable(").append(member.name).append(", flags);\n");
+					sb.append("		dest.writeParcelable(").append(member.name)
+							.append(", flags);");
 				} else {
 					sb.append("dest.write")
 							.append(StringUtils.capitalize(member.type))
@@ -315,7 +329,7 @@ public class Main {
 				sb.append("\n");
 			}
 			sb.append("    }\n\n");
-			
+
 			return sb.toString();
 		}
 	}
@@ -325,7 +339,53 @@ public class Main {
 		public String jsonField;
 		public String type;
 		public String name;
+		
+		@Override
+		public boolean equals(Object obj){
+			if(obj instanceof Member){
+				
+				return ((Member) obj).name.equals(name);
+			}
+			return false;
+		}
+		@Override
+		public int hashCode(){
+			return name.hashCode();
+		}
 
+		public String getGetterSignature() {
+			StringBuilder sBuilder = new StringBuilder();
+			String methodName = StringUtils.removeStart(name, "m");
+
+			String setPrefix = "get";
+			if (type.equals("boolean")) {
+				setPrefix = "is";
+			}
+
+			sBuilder.append(setPrefix).append(methodName).append("()");
+			return sBuilder.toString();
+		}
+
+		public String getSetter() {
+			StringBuilder sBuilder = new StringBuilder();
+			String methodName = StringUtils.removeStart(name, "m");
+			String nameNoPrefix = mInflector.camelCase(methodName, false);
+			sBuilder.append("    public void set").append(methodName)
+					.append("(").append(type).append(" ").append(nameNoPrefix)
+					.append(") {\n        ").append(name).append(" = ")
+					.append(nameNoPrefix).append(";").append("\n    }\n\n");
+			return sBuilder.toString();
+		}
+
+		public String getGetter() {
+			StringBuilder sBuilder = new StringBuilder();
+			
+
+			sBuilder.append("    public ").append(type).append(" ")
+					.append(getGetterSignature()).append(" {\n        return ")
+					.append(name).append(";\n    }\n\n");
+			return sBuilder.toString();
+		}
 	}
 
 }
