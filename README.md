@@ -10,16 +10,19 @@ when run from the commandline, it takes three arguments:
 <li>a url to a json file</li>
 <li>a package name for the classes it will generate</li>
 <li>the name of the base class to start with.</li>
+<li>optionally, the p option will make your classes parcelable.</li>
+<li>optionally, the g option will give your classes gson annotations for serialization.</li>
 </ul>
-e.g. java -jar JsonToJava http://example.com/folder.json com.example.api.model Folder
+java -jar JsonToJava.jar -url http://example.com/folder.json -package com.example.api.model -class Folder -p -g
+
 
 It will create the folder structure for the package you provide, then it will read the json at the url you provide, and output java classes into the folder locally.
 
-Each class will implement Parcelable for easy passing of information in Android.
+Each class will implement Parcelable for easy passing of information in Android (optional).
 Each class will have a default empty constructor.
 The members of each class will follow Android naming conventions with an "m" prefix and camel case.
-Each member will have a corresponding static final String that relates it to it's json counterpart
-Each member will have a @SerializedName annotation for very easy Gson parsing.
+Each member will have a corresponding static final String that relates it to it's json counterpart 
+Each member will have a @SerializedName annotation for very easy Gson parsing. (optional)
 If a member called "mId" or "mUniqueId" is found, then equals and hashcode will be overridden so comparisons are made on the id.
 
 <h3>What I want this tool to do in the future in no particular order</h3>
