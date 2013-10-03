@@ -3,6 +3,7 @@ package com.jsontojava;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
@@ -14,6 +15,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.modeshape.common.text.Inflector;
 
@@ -40,9 +42,22 @@ public class Main {
 		
 
 		try {
-			NewType clazz = generateClass(getJsonFromUrl(mUrl), mBaseType);
-			mTypes.put(mBaseType, clazz);
+			Object root = getJsonFromUrl(mUrl);
+			if(root instanceof JSONObject){
+				NewType clazz = generateClass((JSONObject) root, mBaseType);
+				mTypes.put(mBaseType, clazz);
+
+			}else if(root instanceof JSONArray){
+				NewType clazz = new NewType();
+				clazz.name = "Root";
+				JSONArray rootArray = (JSONArray) root;
+				for(int i = 0; i < rootArray.length();i++){
+					NewType subClazz = generateClass(rootArray.getJSONObject(i),mBaseType);
+					mTypes.put(mBaseType, subClazz);
+				}
+			}
 		} catch (IOException e) {
+			
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -181,16 +196,21 @@ public class Main {
 		return currentMember;
 	}
 
-	private static JSONObject getJsonFromUrl(String url) throws IOException {
+	private static Object getJsonFromUrl(String url) throws IOException {
+		Object retVal = new JSONObject();
 		OkHttpClient client = new OkHttpClient();
 		URLConnection connection = client.open(new URL(url));
 
 		InputStream in = connection.getInputStream();
 
 		String jsonString = IOUtils.toString(in);
-
-		JSONObject obj = new JSONObject(jsonString);
-		return obj;
+		try{
+		retVal = new JSONObject(jsonString);
+		}catch (JSONException e){
+			retVal = new JSONArray(jsonString);
+			
+		}
+		return retVal;
 	}
 
 	private static class NewType {
