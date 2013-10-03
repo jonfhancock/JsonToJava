@@ -1,0 +1,36 @@
+<project name="JsonToJava">
+    <property name="src.dir"    value="src"/>
+    <property name="build.dir"  value="build"/>
+    <property name="libs.dir"   value="libs"/>
+
+    <path id="external.classpath">
+        <pathelement location="${libs.dir}/commons-io-2.4.jar"/>
+        <pathelement location="${libs.dir}/commons-lang3-3.1.jar"/>
+        <pathelement location="${libs.dir}/modeshape-jpa-ddl-gen-2.1.0.Final-jar-with-dependencies.jar"/>
+        <pathelement location="${libs.dir}/okhttp-1.1.1.jar"/>
+    </path>
+
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="build/classes"/>
+        <javac srcdir="${src.dir}" destdir="${build.dir}/classes">
+            <classpath>
+                <path refid="external.classpath" />
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="jar" depends="compile">
+        <mkdir dir="${build.dir}/jar"/>
+        <jar destfile="${build.dir}/jar/JsonToJava.jar" basedir="${build.dir}/classes">
+            <zipgroupfileset dir="${libs.dir}" includes="*.jar"/>
+            <manifest>
+                <attribute name="Main-Class" value="com.jsontojava.Main"/>
+            </manifest>
+        </jar>
+    </target> 
+
+</project>
