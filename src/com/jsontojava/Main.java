@@ -95,7 +95,57 @@ public class Main {
 		}
 		return currentType;
 	}
+	
+	private static boolean isPrimitiveType(Object current){
+		String clazz = current.getClass().getSimpleName();
 
+		if (clazz.equals("Boolean")) {
+			return true;
+		}
+		if (clazz.equals("Integer")) {
+			return true;		}
+		if (clazz.equals("Double")) {
+			return true;		}
+		if (clazz.equals("String")) {
+
+			return true;
+
+		}
+		return false;
+	}
+	private static String getPrimitiveType(Object current){
+		String clazz = current.getClass().getSimpleName();
+
+		if (clazz.equals("Boolean")) {
+			clazz = "boolean";
+		}
+		if (clazz.equals("Integer")) {
+			clazz = "int";
+		}
+		if (clazz.equals("Double")) {
+			clazz = "double";
+		}
+		if (clazz.equals("String")) {
+
+			try {
+				long l = Long.parseLong((String) current);
+				clazz = "long";
+
+				if(Math.abs(l) < Integer.MAX_VALUE/2){
+					clazz = "int";
+				}
+			} catch (NumberFormatException e) {
+				try {
+					Double.parseDouble((String) current);
+					clazz = "double";
+				} catch (NumberFormatException e2) {
+
+				}
+			}
+
+		}
+		return clazz;
+	}
 	private static Member generateMember(String key, Object current) {
 		Member currentMember = new Member();
 
@@ -109,29 +159,41 @@ public class Main {
 
 		if (current instanceof JSONArray) {
 			JSONArray array = (JSONArray) current;
-			NewType type = new NewType();
-			type.name = className;
-			type.pack = mPackage;
-			for (int i = 0; i < array.length(); i++) {
-				Object element = array.get(i);
-				if (element instanceof JSONObject) {
-					NewType subClass = generateClass((JSONObject) element,
-							className);
-					type.imports.addAll(subClass.imports);
-					type.members.addAll(subClass.members);
+			if(array.length() > 0){
+				if(isPrimitiveType(array.get(0))){
+					String pType = getPrimitiveType(array.get(0));
+					currentMember.name = pluralMemberName;
+					currentMember.type = "List<" + pType + ">";
+
+				}else{
+					NewType type = new NewType();
+					type.name = className;
+					type.pack = mPackage;
+					for (int i = 0; i < array.length(); i++) {
+						Object element = array.get(i);
+						if (element instanceof JSONObject) {
+							NewType subClass = generateClass((JSONObject) element,
+									className);
+							type.imports.addAll(subClass.imports);
+							type.members.addAll(subClass.members);
+						}
+
+					}
+					currentMember.name = pluralMemberName;
+					currentMember.type = "List<" + className + ">";
+
+					if (mTypes.containsKey(className)) {
+						mTypes.get(className).imports.addAll(type.imports);
+						mTypes.get(className).members.addAll(type.members);
+					} else {
+						mTypes.put(className, type);
+
+					}	
 				}
-
+				
 			}
-			currentMember.name = pluralMemberName;
-			currentMember.type = "List<" + className + ">";
+		
 
-			if (mTypes.containsKey(className)) {
-				mTypes.get(className).imports.addAll(type.imports);
-				mTypes.get(className).members.addAll(type.members);
-			} else {
-				mTypes.put(className, type);
-
-			}
 		} else {
 			if (current instanceof JSONObject) {
 				NewType type = new NewType();
