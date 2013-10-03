@@ -17,6 +17,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.modeshape.common.text.Inflector;
 
+import com.squareup.javawriter.JavaWriter;
 import com.squareup.okhttp.OkHttpClient;
 
 public class Main {
@@ -25,7 +26,7 @@ public class Main {
 	static String mPackage;
 	static String mBaseType;
 	static Map<String, NewType> mTypes;
-
+	static JavaWriter mWriter;
 	/**
 	 * @param args
 	 * @throws IOException
@@ -36,6 +37,7 @@ public class Main {
 		mBaseType = args[2];
 		mTypes = new HashMap<String, NewType>();
 		mInflector = new Inflector();
+		
 
 		try {
 			NewType clazz = generateClass(getJsonFromUrl(mUrl), mBaseType);
@@ -145,11 +147,31 @@ public class Main {
 				if (clazz.equals("Integer")) {
 					clazz = "int";
 				}
-				if (clazz.equals("Null")) {
-					clazz = "String";
-				}
 				if (clazz.equals("Double")) {
 					clazz = "double";
+				}
+				if (clazz.equals("String")) {
+
+					try {
+						long l = Long.parseLong((String) current);
+						clazz = "long";
+
+						if(Math.abs(l) < Integer.MAX_VALUE/2){
+							clazz = "int";
+						}
+					} catch (NumberFormatException e) {
+						try {
+							Double.parseDouble((String) current);
+							clazz = "double";
+						} catch (NumberFormatException e2) {
+
+						}
+					}
+
+				}
+
+				if (clazz.equals("Null")) {
+					clazz = "String";
 				}
 				currentMember.name = memberName;
 				currentMember.type = clazz;
@@ -196,7 +218,6 @@ public class Main {
 			sBuilder.append("public class ").append(name)
 					.append(" implements Parcelable{\n\n");
 
-			
 			// Insert the static fields to define the json names
 			// eg. private static final String FIELD_FIRST_NAME = "first_name";
 			for (Member member : members) {
@@ -218,19 +239,19 @@ public class Main {
 			}
 			sBuilder.append("\n\n");
 
-			sBuilder.append("    public ").append(name).append("(){\n\n").append("    }\n\n");
+			sBuilder.append("    public ").append(name).append("(){\n\n")
+					.append("    }\n\n");
 
-			
 			// Insert the accessor methods for the members;
 			for (Member member : members) {
 				sBuilder.append(member.getSetter());
 				sBuilder.append(member.getGetter());
 
 			}
-			
+
 			sBuilder.append(generateExtraMethods());
-			
-			sBuilder.append(generateParcelableCode());
+
+			//sBuilder.append(generateParcelableCode());
 
 			sBuilder.append("\n}");
 			return sBuilder.toString();
@@ -246,14 +267,20 @@ public class Main {
 
 					sb.append("    @Override\n");
 					sb.append("    public boolean equals(Object obj){\n");
-					sb.append("        if(obj instanceof ").append(type).append("){\n");
-					sb.append("        		return ((").append(type).append(") obj).").append(member.getGetterSignature()).append(".equals(").append(member.name).append(");\n");
+					sb.append("        if(obj instanceof ").append(type)
+							.append("){\n");
+					sb.append("        		return ((").append(type)
+							.append(") obj).")
+							.append(member.getGetterSignature())
+							.append(".equals(").append(member.name)
+							.append(");\n");
 					sb.append("        }\n");
 					sb.append("        return false;\n");
 					sb.append("    }\n\n");
 					sb.append("    @Override\n");
 					sb.append("    public int hashCode(){\n");
-					sb.append("        return ").append(member.name).append(".hashCode();\n");
+					sb.append("        return ").append(member.name)
+							.append(".hashCode();\n");
 					sb.append("    }\n\n");
 					return sb.toString();
 				}
@@ -339,17 +366,18 @@ public class Main {
 		public String jsonField;
 		public String type;
 		public String name;
-		
+
 		@Override
-		public boolean equals(Object obj){
-			if(obj instanceof Member){
-				
+		public boolean equals(Object obj) {
+			if (obj instanceof Member) {
+
 				return ((Member) obj).name.equals(name);
 			}
 			return false;
 		}
+
 		@Override
-		public int hashCode(){
+		public int hashCode() {
 			return name.hashCode();
 		}
 
@@ -379,7 +407,6 @@ public class Main {
 
 		public String getGetter() {
 			StringBuilder sBuilder = new StringBuilder();
-			
 
 			sBuilder.append("    public ").append(type).append(" ")
 					.append(getGetterSignature()).append(" {\n        return ")
