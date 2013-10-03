@@ -101,8 +101,12 @@ public class Member {
 		String methodName = StringUtils.removeStart(name, "m");
 
 		String setPrefix = "get";
+		try{
 		if (type.equals("boolean")) {
 			setPrefix = "is";
+		}
+		}catch (NullPointerException e){
+			e.printStackTrace();
 		}
 
 		sBuilder.append(setPrefix).append(methodName).append("()");

@@ -135,14 +135,16 @@ public class Main {
 		String singular = mInflector.singularize(key);
 		String className = mInflector.camelCase(singular, true, '_','.','-');
 		memberBuilder.setJsonField(key).setName(className);
-
+		if(key.equals("seals")){
+			boolean breakPoint = true;
+		}
 
 		if (current instanceof JSONArray) {
 			memberBuilder.setPlural();
 
 			JSONArray array = (JSONArray) current;
-			if (array.length() > 0) {
-				if (TypeUtils.isPrimitiveType(array.get(0))) {
+			
+				if (array.length() > 0 && TypeUtils.isPrimitiveType(array.get(0))) {
 					String pType = TypeUtils.getPrimitiveClassType(array.get(0));
 					memberBuilder.setType(pType);
 
@@ -170,7 +172,7 @@ public class Main {
 					}
 				}
 
-			}
+			
 
 		} else {
 			if (current instanceof JSONObject) {
