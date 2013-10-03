@@ -8,6 +8,7 @@
         <pathelement location="${libs.dir}/commons-lang3-3.1.jar"/>
         <pathelement location="${libs.dir}/modeshape-jpa-ddl-gen-2.1.0.Final-jar-with-dependencies.jar"/>
         <pathelement location="${libs.dir}/okhttp-1.1.1.jar"/>
+        <pathelement location="${libs.dir}/commons-cli-1.2.jar"/>
     </path>
 
     <target name="clean">
