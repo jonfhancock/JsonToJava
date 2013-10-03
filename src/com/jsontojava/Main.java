@@ -251,7 +251,7 @@ public class Main {
 
 			sBuilder.append(generateExtraMethods());
 
-			//sBuilder.append(generateParcelableCode());
+			sBuilder.append(generateParcelableCode());
 
 			sBuilder.append("\n}");
 			return sBuilder.toString();
