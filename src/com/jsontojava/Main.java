@@ -3,7 +3,6 @@ package com.jsontojava;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
@@ -19,7 +18,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.modeshape.common.text.Inflector;
 
-import com.squareup.javawriter.JavaWriter;
 import com.squareup.okhttp.OkHttpClient;
 
 public class Main {
@@ -28,7 +26,6 @@ public class Main {
 	static String mPackage;
 	static String mBaseType;
 	static Map<String, NewType> mTypes;
-	static JavaWriter mWriter;
 	/**
 	 * @param args
 	 * @throws IOException
