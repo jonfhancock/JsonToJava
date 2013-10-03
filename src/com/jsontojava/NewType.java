@@ -100,7 +100,7 @@ public class NewType {
 		}
 		sBuilder.append("{\n\n");
 
-		if (gson) {
+
 			// Insert the static fields to define the json names
 			// eg. private static final String FIELD_FIRST_NAME = "first_name";
 			for (Member member : members) {
@@ -109,7 +109,7 @@ public class NewType {
 						.append("\n");
 			}
 			sBuilder.append("\n\n");
-		}
+		
 		// Insert the actual member names including the SerializedName
 		// annotation for Gson
 		for (Member member : members) {
