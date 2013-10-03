@@ -113,6 +113,39 @@ public class Main {
 		}
 		return false;
 	}
+	private static String getPrimitiveClassType(Object current){
+		String clazz = current.getClass().getSimpleName();
+
+		if (clazz.equals("Boolean")) {
+			clazz = "Boolean";
+		}
+		if (clazz.equals("Integer")) {
+			clazz = "Integer";
+		}
+		if (clazz.equals("Double")) {
+			clazz = "Double";
+		}
+		if (clazz.equals("String")) {
+
+			try {
+				long l = Long.parseLong((String) current);
+				clazz = "Long";
+
+				if(Math.abs(l) < Integer.MAX_VALUE/2){
+					clazz = "Integer";
+				}
+			} catch (NumberFormatException e) {
+				try {
+					Double.parseDouble((String) current);
+					clazz = "Double";
+				} catch (NumberFormatException e2) {
+					
+				}
+			}
+
+		}
+		return clazz;
+	}
 	private static String getPrimitiveType(Object current){
 		String clazz = current.getClass().getSimpleName();
 
@@ -161,7 +194,7 @@ public class Main {
 			JSONArray array = (JSONArray) current;
 			if(array.length() > 0){
 				if(isPrimitiveType(array.get(0))){
-					String pType = getPrimitiveType(array.get(0));
+					String pType = getPrimitiveClassType(array.get(0));
 					currentMember.name = pluralMemberName;
 					currentMember.type = "List<" + pType + ">";
 
