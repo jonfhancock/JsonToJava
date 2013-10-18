@@ -4,8 +4,7 @@ Json2Java
 I was fed up with writing Java classes to mirror json models.  So I wrote this Java app to automate the process.
 
 <h3>What this tool can do right now:</h3>
-
-when run from the commandline, it takes three arguments:
+Give it:
 <ul>
 <li>a url to a json file</li>
 <li>a package name for the classes it will generate</li>
@@ -13,10 +12,18 @@ when run from the commandline, it takes three arguments:
 <li>optionally, the p option will make your classes parcelable.</li>
 <li>optionally, the g option will give your classes gson annotations for serialization.</li>
 </ul>
+
+
+
+It will create the folder structure for the package you provide, then it will read the json at the url you provide, and output java classes into a zip file.
+
+The easiest way to actuall use this is to go to http://jsontojava.appspot.com/  
+There you can just put in the variables and click download.
+
+When run from the commandline, it looks like this:
+
 java -jar JsonToJava.jar -url http://example.com/folder.json -package com.example.api.model -class Folder -p -g
 
-
-It will create the folder structure for the package you provide, then it will read the json at the url you provide, and output java classes into the folder locally.
 
 Each class will implement Parcelable for easy passing of information in Android (optional).
 Each class will have a default empty constructor.
