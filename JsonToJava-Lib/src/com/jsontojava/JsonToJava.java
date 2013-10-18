@@ -79,6 +79,8 @@ public class JsonToJava {
 			out.closeEntry();
 //			IOUtils.write(classFile, );
 			System.out.println("Created " + className + FILE_EXTENSION_JAVA);
+//			System.out.println("Contract for " + className);
+//			System.out.println(type.toContract() + "\n\n");
 		}
 		out.finish();
 		return outputStream;

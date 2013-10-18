@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.modeshape.common.text.Inflector;
 
 public class NewType {
+	private static final String PUBLIC_STATIC_FINAL = "public static final ";
 	private static final String ONE_TAB = "    ";
 	private static final String TWO_TABS = ONE_TAB+ONE_TAB;
 	public static final String IMPORT_JAVA_UTIL_LIST = "java.util.List";
@@ -85,6 +86,41 @@ public class NewType {
 		return toPojoString(EnumSet.noneOf(OutputOption.class),null);
 	}
 
+	public String getColumns(){
+		String pluralizedName = mInflector.pluralize(name);
+		String underscorePlural = mInflector.underscore(pluralizedName);
+		String underscore = mInflector.underscore(name);
+
+		StringBuilder sb = new StringBuilder();
+		sb.append("public static class ").append(name).append(" implements BaseColumns {\n");
+		
+		// Content mime types
+		sb.append(ONE_TAB).append(PUBLIC_STATIC_FINAL).append("String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + /vnd.contentrovider." );
+		sb.append(mInflector.pluralize(underscore.toLowerCase())).append(";\n\n");
+		sb.append(ONE_TAB).append(PUBLIC_STATIC_FINAL).append("String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + /vnd.contentrovider." );
+		sb.append(underscore.toLowerCase()).append(";\n\n");
+		
+		// Content URIs
+	
+		sb.append(ONE_TAB).append(PUBLIC_STATIC_FINAL).append("Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_").append(underscorePlural.toUpperCase()).append(").build();\n\n");
+		if(members.contains("mId") || members.contains("mUniqueId")){
+			sb.append(ONE_TAB).append(PUBLIC_STATIC_FINAL).append("Uri CONTENT_BY_ID = BASE_CONTENT_URI.buildUpon().appendPath(PATH_").append(underscorePlural.toUpperCase()).append("_BY_ID).build();\n\n");
+		}
+		
+		// Table name
+		sb.append(ONE_TAB).append(PUBLIC_STATIC_FINAL).append("String TABLE_NAME = \"").append(underscore.toLowerCase()).append("\";\n\n");
+		
+		// column names
+		for(Member member:members){
+			String simpleName = StringUtils.removeStart(member.name, "m");
+			String underscoreMember = mInflector.underscore(simpleName);
+			sb.append(ONE_TAB).append(PUBLIC_STATIC_FINAL).append("String COLUMN_NAME_").append(underscoreMember.toUpperCase()).append(" = \"").append(underscoreMember.toLowerCase()).append("\";\n\n");
+		}
+		
+		sb.append("}\n");
+		return sb.toString();
+	}
+	
 	public String toPojoString(EnumSet<OutputOption> options,JsonToJava jsonToJava) {
 		if (options.contains(OutputOption.PARCELABLE)) {
 			imports.add(IMPORT_ANDROID_OS_PARCEL);
