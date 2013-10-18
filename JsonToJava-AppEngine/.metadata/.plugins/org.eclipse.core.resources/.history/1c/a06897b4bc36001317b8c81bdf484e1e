@@ -1,0 +1,27 @@
+package com.jonfhancock.jsontojava;
+
+import java.io.IOException;
+
+import javax.servlet.http.*;
+
+import com.jsontojava.JsonToJava;
+
+@SuppressWarnings("serial")
+public class JsonToJavaServlet extends HttpServlet {
+	public void doGet(HttpServletRequest req, HttpServletResponse resp)
+			throws IOException {
+		
+		
+		JsonToJava jsonToJava = new JsonToJava();
+		
+		jsonToJava.setUrl(req.getParameter("url"));
+		jsonToJava.setPackage(req.getParameter("package"));
+		jsonToJava.setBaseType(req.getParameter("class"));
+		
+		
+		jsonToJava.fetchJson();
+		jsonToJava.outputZipFile();
+		resp.setContentType("text/plain");
+		resp.getWriter().println("Hello, world");
+	}
+}

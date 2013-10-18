@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="US-ASCII" standalone="no"?>
+<jardesc>
+    <jar path="JsonToJava-AppEngine/war/WEB-INF/lib/jsontojava-lib.jar"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/JsonToJava-Lib/OutputJar.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+    <selectedProjects/>
+    <manifest generateManifest="true" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="false" exportJavaFiles="false" exportOutputFolder="true">
+        <javaElement handleIdentifier="=JsonToJava-Lib/src"/>
+        <file path="/JsonToJava-Lib/.classpath"/>
+        <folder path="/JsonToJava-Lib/libs"/>
+    </selectedElements>
+</jardesc>

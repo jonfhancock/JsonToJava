@@ -113,10 +113,10 @@ public class Member {
 		return sBuilder.toString();
 	}
 
-	public String getSetter() {
+	public String getSetter(Inflector inflector) {
 		StringBuilder sBuilder = new StringBuilder();
 		String methodName = StringUtils.removeStart(name, "m");
-		String nameNoPrefix = Main.mInflector.camelCase(methodName, false);
+		String nameNoPrefix = inflector.camelCase(methodName, false);
 		sBuilder.append("    public void set").append(methodName).append("(").append(type).append(" ")
 				.append(nameNoPrefix).append(") {\n        ").append(name).append(" = ").append(nameNoPrefix)
 				.append(";").append("\n    }\n\n");

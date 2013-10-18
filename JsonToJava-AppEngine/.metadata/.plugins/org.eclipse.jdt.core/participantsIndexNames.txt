@@ -1,0 +1,5 @@
+INDEX VERSION 1.126
+/Users/jonfhancock/Documents/AppEngineWorkspace/.metadata/.plugins/org.eclipse.jst.jsp.core/jspsearch/2889311136.index
+/TaskQueueExamples/src
+/Users/jonfhancock/Documents/AppEngineWorkspace/.metadata/.plugins/org.eclipse.jst.jsp.core/jspsearch/1359840284.index
+/MediaStore/src
