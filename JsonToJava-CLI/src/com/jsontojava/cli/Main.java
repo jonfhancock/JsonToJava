@@ -15,6 +15,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import com.jsontojava.JsonToJava;
+import com.jsontojava.OutputOption;
 
 public class Main {
 	private static final String OPTION_PACKAGE = "package";
@@ -39,8 +40,12 @@ public class Main {
 		jsonToJava.setUrl(cmd.getOptionValue(OPTION_URL));
 		jsonToJava.setPackage(cmd.getOptionValue(OPTION_PACKAGE));
 		jsonToJava.setBaseType(cmd.getOptionValue(OPTION_ROOT));
-		jsonToJava.useGsonAnnotations(cmd.hasOption(OPTION_GSON));
-		jsonToJava.useParcelable(cmd.hasOption(OPTION_PARCELABLE));
+		if(cmd.hasOption(OPTION_GSON)){
+			jsonToJava.addOutputOption(OutputOption.GSON);
+		}
+		if(cmd.hasOption(OPTION_PARCELABLE)){
+			jsonToJava.addOutputOption(OutputOption.PARCELABLE);
+		}
 		
 		jsonToJava.fetchJson();
 		File zipFile = new File(jsonToJava.getPackage() + ".zip");

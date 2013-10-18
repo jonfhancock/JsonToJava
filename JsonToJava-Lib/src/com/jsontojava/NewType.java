@@ -1,5 +1,6 @@
 package com.jsontojava;
 
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -81,18 +82,18 @@ public class NewType {
 	}
 
 	public String toString() {
-		return toString(false, false,null);
+		return toPojoString(EnumSet.noneOf(OutputOption.class),null);
 	}
 
-	public String toString(boolean parcelable, boolean gson,JsonToJava jsonToJava) {
-		if (parcelable) {
+	public String toPojoString(EnumSet<OutputOption> options,JsonToJava jsonToJava) {
+		if (options.contains(OutputOption.PARCELABLE)) {
 			imports.add(IMPORT_ANDROID_OS_PARCEL);
 			imports.add(IMPORT_ANDROID_OS_PARCELABLE);
 			if (imports.contains(IMPORT_JAVA_UTIL_LIST)) {
 				imports.add(IMPORT_JAVA_UIIL_ARRAYLIST);
 			}
 		}
-		if (gson) {
+		if (options.contains(OutputOption.GSON)) {
 			imports.add(IMPORT_GSON_SERIALIZED_NAME);
 		}
 		StringBuilder sBuilder = new StringBuilder();
@@ -103,7 +104,7 @@ public class NewType {
 		}
 		sBuilder.append("\n\n");
 		sBuilder.append("public class ").append(name);
-		if (parcelable) {
+		if (options.contains(OutputOption.PARCELABLE)) {
 			sBuilder.append(" implements Parcelable");
 		}
 		sBuilder.append("{\n\n");
@@ -121,7 +122,7 @@ public class NewType {
 		// Insert the actual member names including the SerializedName
 		// annotation for Gson
 		for (Member member : members) {
-			if (gson) {
+			if (options.contains(OutputOption.GSON)) {
 				sBuilder.append(ONE_TAB+"@SerializedName(" + member.fieldName + ")\n");
 			}
 			sBuilder.append(ONE_TAB+"private " + member.type + " " + member.name + ";").append("\n");
@@ -139,7 +140,7 @@ public class NewType {
 
 		sBuilder.append(generateExtraMethods());
 
-		if (parcelable) {
+		if (options.contains(OutputOption.PARCELABLE)) {
 			sBuilder.append(generateParcelableCode(jsonToJava.getTypes()));
 		}
 

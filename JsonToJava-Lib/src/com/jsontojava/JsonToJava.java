@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -27,12 +28,12 @@ public class JsonToJava {
 	private String mPackage;
 	private String mBaseType;
 	private Map<String, NewType> mTypes;
-	private boolean mParcel;
-	private boolean mGsonAnnotations;
+	private EnumSet<OutputOption> mOutputOptions;
 
 	public JsonToJava() {
 		mInflector = new Inflector();
 		mTypes = new HashMap<String, NewType>();
+		mOutputOptions = EnumSet.noneOf(OutputOption.class);
 
 	}
 
@@ -74,7 +75,7 @@ public class JsonToJava {
 			ZipEntry e = new ZipEntry(path+ fileSeparater + className + FILE_EXTENSION_JAVA);
 			out.putNextEntry(e);
 //			File classFile = new File(dir, className + FILE_EXTENSION_JAVA);
-			IOUtils.write(type.toString(mParcel,mGsonAnnotations,this), out);
+			IOUtils.write(type.toPojoString(mOutputOptions,this), out);
 			out.closeEntry();
 //			IOUtils.write(classFile, );
 			System.out.println("Created " + className + FILE_EXTENSION_JAVA);
@@ -125,12 +126,8 @@ public class JsonToJava {
 		mTypes = types;
 	}
 
-	public void useParcelable(boolean useParcelable) {
-		mParcel = useParcelable;
-	}
-
-	public void useGsonAnnotations(boolean useGson) {
-		mGsonAnnotations = useGson;
+	public void addOutputOption(OutputOption option){
+		mOutputOptions.add(option);
 	}
 
 	private Object getJsonFromUrl(String url) throws IOException {

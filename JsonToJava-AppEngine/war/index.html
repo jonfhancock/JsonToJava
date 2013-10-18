@@ -73,9 +73,9 @@ body {
 					name
 				</label>
 			</p>
-			<label class="checkbox"> <input type="checkbox" name="p" value="true">
+			<label class="checkbox"> <input type="checkbox" name="options" value="PARCELABLE">
 				Implement Parcelable
-			</label> <label class="checkbox"> <input type="checkbox" name="p" value="true">
+			</label> <label class="checkbox"> <input type="checkbox" name="options" value="GSON">
 				Include Gson Annotations
 			</label>
 			<button class="btn btn-large btn-primary" id="download" type="submit">Download zip</button>
@@ -90,21 +90,12 @@ body {
 	<script src="/assets/js/jquery.js"></script>
 	<script src="/assets/js/bootstrap.min.js"></script>
 	<script>
-// 	$( document ).ready(function() {
-// 	    $("#generate").submit(function(event){
-// 	    	generate();
-// 	    	event.preventDefault();
-// 	    	return false;
-// 	    });
-// 	});
-// 	function generate(){
-// 		var formData = $("#generate").serialize();
-		
-// 		$.get( "jsontojava",formData, function( data ) {
-// 			  $( ".result" ).html( data );
-// 			  alert( "Load was performed." );
-// 			});
-// 	}
+	$( document ).ready(function() {
+		$('#generate').submit (function() { return formValidated(); });
+	});
+	function formValidated(){
+		return $("input[name=url]").val().length > 0 && $("input[name=package]").val().length > 0 && $("input[name=class]").val().length > 0;
+	}
 	</script>
 </body>
 </html>

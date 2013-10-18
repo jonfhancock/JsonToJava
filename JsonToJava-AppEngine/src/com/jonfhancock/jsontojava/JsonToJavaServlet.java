@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.jsontojava.JsonToJava;
+import com.jsontojava.OutputOption;
 
 @SuppressWarnings("serial")
 public class JsonToJavaServlet extends HttpServlet {
@@ -15,16 +16,16 @@ public class JsonToJavaServlet extends HttpServlet {
 			throws IOException {
 
 		JsonToJava jsonToJava = new JsonToJava();
-		boolean parcel = req.getParameter("p") != null
-				&& req.getParameter("p").equalsIgnoreCase("true");
-		boolean gson = req.getParameter("g") != null
-				&& req.getParameter("g").equalsIgnoreCase("true");
 		jsonToJava.setUrl(req.getParameter("url"));
 		jsonToJava.setPackage(req.getParameter("package"));
 		jsonToJava.setBaseType(req.getParameter("class"));
-		jsonToJava.useGsonAnnotations(gson);
-		jsonToJava.useParcelable(parcel);
-
+		String[] options = req.getParameterValues("options");
+		if(options != null){
+		for(String option:options){
+			jsonToJava.addOutputOption(OutputOption.valueOf(option));
+		}
+		}
+		System.out.println(options);
 		jsonToJava.fetchJson();
 		ByteArrayOutputStream out = (ByteArrayOutputStream) jsonToJava
 				.outputZipFile(new ByteArrayOutputStream());
