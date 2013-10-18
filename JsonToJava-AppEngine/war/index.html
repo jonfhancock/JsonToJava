@@ -17,7 +17,7 @@ body {
 	background-color: #f5f5f5;
 }
 
-.form-signin {
+.form-horizontal {
 	max-width: 700px;
 	padding: 19px 29px 29px;
 	margin: 0 auto 20px;
@@ -31,11 +31,11 @@ body {
 	box-shadow: 0 1px 2px rgba(0, 0, 0, .05);
 }
 
-.form-signin .form-signin-heading,.form-signin .checkbox {
+.form-horizontal .form-horizontal-heading,.form-horizontal .checkbox {
 	margin-bottom: 10px;
 }
 
-.form-signin input[type="text"],.form-signin input[type="password"] {
+.form-horizontal input[type="text"],.form-horizontal input[type="password"] {
 	font-size: 16px;
 	height: auto;
 	margin-bottom: 15px;
@@ -51,36 +51,54 @@ body {
 
 	<div class="container">
 
-		<form class="form-signin" id="generate" action="jsontojava">
-			<h2 class="form-signin-heading">JSON To Java</h2>
+		<form class="form-horizontal" role="form">
+			<h2 class="form-horizontal-heading">JSON To Java</h2>
 			<p>JSON To Java as a Service (JTJaaS) is intended to lighten the
 				burden of java developers who need to create POJOs to parallel a
 				JSON API.</p>
-			<p>
-				<label class="text"> <input type="text" name="url"
-					class="span4"
-					placeholder="http://example.com/folder.json">Url
-				</label>
-			</p>
-			<p>
-				<label class="text"> <input type="text" name="package"
-					class="span3" placeholder="com.example.api.model">Package
-				</label>
-			</p>
-			<p>
-				<label class="text"> <input type="text" name="class"
-					class="input-block-level" placeholder="Folder">Base class
-					name
-				</label>
-			</p>
-			<label class="checkbox"> <input type="checkbox" name="options" value="PARCELABLE">
-				Implement Parcelable
-			</label> <label class="checkbox"> <input type="checkbox" name="options" value="GSON">
-				Include Gson Annotations
-			</label>
-			<button class="btn btn-large btn-primary" id="download" type="submit">Download zip</button>
+		  <div class="form-group">
+		    <label for="inputUrl" class="col-lg-3 control-label">Url</label>
+		    <div class="col-lg-9">
+		      <input type="text" class="form-control" id="inputUrl" name="url" placeholder="http://example.com/folder.json">
+		    </div>
+		  </div>
+		  <div class="form-group">
+		    <label for="inputPackage" class="col-lg-3 control-label">Package</label>
+		    <div class="col-lg-9">
+		      <input type="text" class="form-control" id="inputPackage" name="package" placeholder="com.example.api.model">
+		    </div>
+		  </div>
+		  <div class="form-group">
+		    <label for="inputClass" class="col-lg-3 control-label">Root class name</label>
+		    <div class="col-lg-5">
+		      <input type="text" class="form-control" id="inputClass" name="class" placeholder="Folder">
+		    </div>
+		  </div>
+		  
+		  <div class="form-group">
+		    <div class="col-lg-offset-3 col-lg-9">
+		      <div class="checkbox">
+		        <label>
+		           <input type="checkbox" name="options" value="PARCELABLE"> Implement Parcelable
+		        </label>
+		      </div>
+		    </div>
+		  </div>
+		  <div class="form-group">
+		    <div class="col-lg-offset-3 col-lg-9">
+		      <div class="checkbox">
+		        <label>
+		        	<input type="checkbox" name="options" value="GSON"> Include Gson Annotations
+		        </label>
+		      </div>
+		    </div>
+		  </div>
+		  <div class="form-group">
+		    <div class="col-lg-offset-2 col-lg-10">
+		      <button type="submit" class="btn btn-large btn-primary">Download zip</button>
+		    </div>
+		  </div>
 		</form>
-
 	</div>
 	<!-- /container -->
 
