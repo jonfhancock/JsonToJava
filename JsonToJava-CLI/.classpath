@@ -4,5 +4,4 @@
 	<classpathentry kind="lib" path="libs/commons-cli-1.2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/JsonToJava-Lib"/>
-	<classpathentry kind="output" path="JsonToJava-Lib/bin"/>
 </classpath>
