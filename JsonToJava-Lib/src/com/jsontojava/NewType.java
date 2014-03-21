@@ -112,7 +112,7 @@ public class NewType {
 		
 		// column names
 		for(Member member:members){
-			String simpleName = StringUtils.removeStart(member.name, "m");
+			String simpleName = StringUtils.removeStart(member.getName(), "m");
 			String underscoreMember = mInflector.underscore(simpleName);
 			sb.append(ONE_TAB).append(PUBLIC_STATIC_FINAL).append("String COLUMN_NAME_").append(underscoreMember.toUpperCase()).append(" = \"").append(underscoreMember.toLowerCase()).append("\";\n\n");
 		}
@@ -150,7 +150,7 @@ public class NewType {
 			// eg. private static final String FIELD_FIRST_NAME = "first_name";
 			for (Member member : members) {
 				sBuilder.append(
-						ONE_TAB+"private static final String " + member.fieldName + " = \"" + member.jsonField + "\";")
+						ONE_TAB+"private static final String " + member.getFieldName() + " = \"" + member.getJsonField() + "\";")
 						.append("\n");
 			}
 			sBuilder.append("\n\n");
@@ -159,9 +159,9 @@ public class NewType {
 		// annotation for Gson
 		for (Member member : members) {
 			if (options.contains(OutputOption.GSON)) {
-				sBuilder.append(ONE_TAB+"@SerializedName(" + member.fieldName + ")\n");
+				sBuilder.append(ONE_TAB+"@SerializedName(" + member.getFieldName() + ")\n");
 			}
-			sBuilder.append(ONE_TAB+"private " + member.type + " " + member.name + ";").append("\n");
+			sBuilder.append(ONE_TAB+"private " + member.getType() + " " + member.getName() + ";").append("\n");
 		}
 		sBuilder.append("\n\n");
 
@@ -181,26 +181,32 @@ public class NewType {
 		}
 
 		sBuilder.append("\n}");
+		System.out.println(getColumns());
 		return sBuilder.toString();
 	}
 
 	private String generateExtraMethods() {
 		String type = StringUtils.removeEnd(StringUtils.removeStart(name, "List<"), ">");
 		for (Member member : members) {
-			if (member.name.equalsIgnoreCase("mId") || member.name.equalsIgnoreCase("mUniqueId")) {
+			if (member.getName().equalsIgnoreCase("mId") || member.getName().equalsIgnoreCase("mUniqueId")) {
 				StringBuilder sb = new StringBuilder();
 
 				sb.append(ONE_TAB+"@Override\n");
 				sb.append(ONE_TAB+"public boolean equals(Object obj){\n");
 				sb.append(TWO_TABS+"if(obj instanceof ").append(type).append("){\n");
-				sb.append(ONE_TAB+TWO_TABS+"return ((").append(type).append(") obj).").append(member.getGetterSignature())
-						.append(".equals(").append(member.name).append(");\n");
+				if(TypeUtils.isPrimitiveType(member.getType())){
+					sb.append(ONE_TAB+TWO_TABS+"return ((").append(type).append(") obj).").append(member.getGetterSignature())
+					.append(".equals(").append(member.getName()).append(");\n");
+				}else{
+					sb.append(ONE_TAB+TWO_TABS+"return ((").append(type).append(") obj).").append(member.getGetterSignature())
+							.append(".equals(").append(member.getName()).append(");\n");
+				}
 				sb.append(TWO_TABS+"}\n");
 				sb.append(TWO_TABS+"return false;\n");
 				sb.append(ONE_TAB+"}\n\n");
 				sb.append(ONE_TAB+"@Override\n");
 				sb.append(ONE_TAB+"public int hashCode(){\n");
-				sb.append(TWO_TABS+"return ").append(member.name).append(".hashCode();\n");
+				sb.append(TWO_TABS+"return ").append(member.getName()).append(".hashCode();\n");
 				sb.append(ONE_TAB+"}\n\n");
 				return sb.toString();
 			}
@@ -214,29 +220,29 @@ public class NewType {
 		sb.append(ONE_TAB+"public ").append(name).append("(Parcel in) {\n");
 		for (Member member : members) {
 
-			if (member.type.startsWith("List")) {
-				String type = StringUtils.removeEnd(StringUtils.removeStart(member.type, "List<"), ">");
+			if (member.getType().startsWith("List")) {
+				String type = StringUtils.removeEnd(StringUtils.removeStart(member.getType(), "List<"), ">");
 				if (TypeUtils.isPrimitiveType(type)) {
 					sb.append(TWO_TABS+"in.readArrayList(").append(type).append(".class.getClassLoader());");
 
 				} else {
-					sb.append(TWO_TABS).append(member.name);
+					sb.append(TWO_TABS).append(member.getName());
 					sb.append(" = new ArrayList<").append(type).append(">();\n");
 
-					sb.append(TWO_TABS+"in.readTypedList(").append(member.name).append(", ").append(type);
+					sb.append(TWO_TABS+"in.readTypedList(").append(member.getName()).append(", ").append(type);
 					sb.append(".CREATOR);");
 
 				}
 			} else {
 				sb.append(ONE_TAB+ONE_TAB);
-				sb.append(member.name).append(" = ");
-				if (member.type.equals("boolean")) {
+				sb.append(member.getName()).append(" = ");
+				if (member.getType().equals("boolean")) {
 
 					sb.append("in.readInt() == 1 ? true: false;");
-				} else if (types.containsKey(member.type)) {
-					sb.append("in.readParcelable(").append(member.type).append(".class.getClassLoader());");
+				} else if (types.containsKey(member.getType())) {
+					sb.append("in.readParcelable(").append(member.getType()).append(".class.getClassLoader());");
 				} else {
-					sb.append("in.read").append(StringUtils.capitalize(member.type)).append("();");
+					sb.append("in.read").append(StringUtils.capitalize(member.getType())).append("();");
 
 				}
 			}
@@ -260,20 +266,20 @@ public class NewType {
 		sb.append(ONE_TAB+"public void writeToParcel(Parcel dest, int flags) {\n");
 		for (Member member : members) {
 			sb.append(ONE_TAB+ONE_TAB);
-			if (member.type.startsWith("List")) {
-				String type = StringUtils.removeEnd(StringUtils.removeStart(member.type, "List<"), ">");
+			if (member.getType().startsWith("List")) {
+				String type = StringUtils.removeEnd(StringUtils.removeStart(member.getType(), "List<"), ">");
 				if (TypeUtils.isPrimitiveType(type)) {
-					sb.append("dest.writeList(").append(member.name).append(");");
+					sb.append("dest.writeList(").append(member.getName()).append(");");
 
 				} else {
-					sb.append("dest.writeTypedList(").append(member.name).append(");");
+					sb.append("dest.writeTypedList(").append(member.getName()).append(");");
 				}
-			} else if (member.type.equals("boolean")) {
-				sb.append("dest.writeInt(").append(member.name).append(" ? 1 : 0);");
-			} else if (types.containsKey(member.type)) {
-				sb.append("dest.writeParcelable(").append(member.name).append(", flags);");
+			} else if (member.getType().equals("boolean")) {
+				sb.append("dest.writeInt(").append(member.getName()).append(" ? 1 : 0);");
+			} else if (types.containsKey(member.getType())) {
+				sb.append("dest.writeParcelable(").append(member.getName()).append(", flags);");
 			} else {
-				sb.append("dest.write").append(StringUtils.capitalize(member.type)).append("(").append(member.name)
+				sb.append("dest.write").append(StringUtils.capitalize(member.getType())).append("(").append(member.getName())
 						.append(");");
 
 			}

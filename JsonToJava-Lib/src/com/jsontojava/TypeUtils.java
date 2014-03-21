@@ -73,7 +73,6 @@ public class TypeUtils {
 			clazz = PRIMITIVE_DOUBLE;
 		}
 		if (clazz.equals(TYPE_STRING)) {
-
 			try {
 				long l = Long.parseLong((String) current);
 				clazz = PRIMITIVE_LONG;

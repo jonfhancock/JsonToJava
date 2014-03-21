@@ -8,10 +8,10 @@ import org.modeshape.common.text.Inflector;
 
 public class Member {
 	private Set<String> mModifiers;
-	public String fieldName;
-	public String jsonField;
-	public String type;
-	public String name;
+	private String mFieldName;
+	private String mJsonField;
+	private String mType;
+	private String mName;
 
 	public static class Builder {
 		private static final Inflector mInflector = new Inflector();
@@ -70,10 +70,10 @@ public class Member {
 		
 		public Member build(){
 			Member member = new Member();
-			member.name = mName;
-			member.type = mType;
-			member.fieldName = mFieldConstantName;
-			member.jsonField = mJsonField;
+			member.setName(mName);
+			member.setType(mType);
+			member.setFieldName(mFieldConstantName);
+			member.setJsonField(mJsonField);
 			member.mModifiers = mModifiers;
 			return member;
 			
@@ -86,23 +86,23 @@ public class Member {
 	public boolean equals(Object obj) {
 		if (obj instanceof Member) {
 
-			return ((Member) obj).name.equals(name);
+			return ((Member) obj).getName().equals(getName());
 		}
 		return false;
 	}
 
 	@Override
 	public int hashCode() {
-		return name.hashCode();
+		return getName().hashCode();
 	}
 
 	public String getGetterSignature() {
 		StringBuilder sBuilder = new StringBuilder();
-		String methodName = StringUtils.removeStart(name, "m");
+		String methodName = StringUtils.removeStart(getName(), "m");
 
 		String setPrefix = "get";
 		try{
-		if (type.equals("boolean")) {
+		if (getType().equals("boolean")) {
 			setPrefix = "is";
 		}
 		}catch (NullPointerException e){
@@ -115,10 +115,10 @@ public class Member {
 
 	public String getSetter(Inflector inflector) {
 		StringBuilder sBuilder = new StringBuilder();
-		String methodName = StringUtils.removeStart(name, "m");
+		String methodName = StringUtils.removeStart(getName(), "m");
 		String nameNoPrefix = inflector.camelCase(methodName, false);
-		sBuilder.append("    public void set").append(methodName).append("(").append(type).append(" ")
-				.append(nameNoPrefix).append(") {\n        ").append(name).append(" = ").append(nameNoPrefix)
+		sBuilder.append("    public void set").append(methodName).append("(").append(getType()).append(" ")
+				.append(nameNoPrefix).append(") {\n        ").append(getName()).append(" = ").append(nameNoPrefix)
 				.append(";").append("\n    }\n\n");
 		return sBuilder.toString();
 	}
@@ -126,8 +126,40 @@ public class Member {
 	public String getGetter() {
 		StringBuilder sBuilder = new StringBuilder();
 
-		sBuilder.append("    public ").append(type).append(" ").append(getGetterSignature())
-				.append(" {\n        return ").append(name).append(";\n    }\n\n");
+		sBuilder.append("    public ").append(getType()).append(" ").append(getGetterSignature())
+				.append(" {\n        return ").append(getName()).append(";\n    }\n\n");
 		return sBuilder.toString();
+	}
+
+	public String getFieldName() {
+		return mFieldName;
+	}
+
+	public void setFieldName(String fieldName) {
+		this.mFieldName = fieldName;
+	}
+
+	public String getJsonField() {
+		return mJsonField;
+	}
+
+	public void setJsonField(String jsonField) {
+		this.mJsonField = jsonField;
+	}
+
+	public String getType() {
+		return mType;
+	}
+
+	public void setType(String type) {
+		this.mType = type;
+	}
+
+	public String getName() {
+		return mName;
+	}
+
+	public void setName(String name) {
+		this.mName = name;
 	}
 }
