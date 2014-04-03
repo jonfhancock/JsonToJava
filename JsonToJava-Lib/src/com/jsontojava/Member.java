@@ -69,6 +69,9 @@ public class Member {
 		}
 		
 		public Member build(){
+			if((mName.equalsIgnoreCase("mid") || mName.equalsIgnoreCase("muniqueid")) && mType.equalsIgnoreCase("int")){
+				mType = "long";
+			}
 			Member member = new Member();
 			member.setName(mName);
 			member.setType(mType);

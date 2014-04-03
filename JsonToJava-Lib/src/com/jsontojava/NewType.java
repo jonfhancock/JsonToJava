@@ -196,7 +196,7 @@ public class NewType {
 				sb.append(TWO_TABS+"if(obj instanceof ").append(type).append("){\n");
 				if(TypeUtils.isPrimitiveType(member.getType())){
 					sb.append(ONE_TAB+TWO_TABS+"return ((").append(type).append(") obj).").append(member.getGetterSignature())
-					.append(".equals(").append(member.getName()).append(");\n");
+					.append(" == ").append(member.getName()).append(";\n");
 				}else{
 					sb.append(ONE_TAB+TWO_TABS+"return ((").append(type).append(") obj).").append(member.getGetterSignature())
 							.append(".equals(").append(member.getName()).append(");\n");
@@ -207,6 +207,15 @@ public class NewType {
 				sb.append(ONE_TAB+"@Override\n");
 				sb.append(ONE_TAB+"public int hashCode(){\n");
 				sb.append(TWO_TABS+"return ").append(member.getName()).append(".hashCode();\n");
+				sb.append(TWO_TABS+"return ");
+				if(member.getType().equals("long")){
+					sb.append("((Long)");
+				}
+				sb.append(member.getName());
+				if(member.getType().equals("long")){
+					sb.append(")");
+				}
+				sb.append(".hashCode();\n");
 				sb.append(ONE_TAB+"}\n\n");
 				return sb.toString();
 			}
