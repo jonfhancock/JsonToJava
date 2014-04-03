@@ -179,9 +179,12 @@ public class NewType {
 		if (options.contains(OutputOption.PARCELABLE)) {
 			sBuilder.append(generateParcelableCode(jsonToJava.getTypes()));
 		}
-
+		
+		if(options.contains(OutputOption.TO_STRING)){
+			sBuilder.append(generateToString());
+		}
 		sBuilder.append("\n}");
-		System.out.println(getColumns());
+//		System.out.println(getColumns());
 		return sBuilder.toString();
 	}
 
@@ -206,7 +209,6 @@ public class NewType {
 				sb.append(ONE_TAB+"}\n\n");
 				sb.append(ONE_TAB+"@Override\n");
 				sb.append(ONE_TAB+"public int hashCode(){\n");
-				sb.append(TWO_TABS+"return ").append(member.getName()).append(".hashCode();\n");
 				sb.append(TWO_TABS+"return ");
 				if(member.getType().equals("long")){
 					sb.append("((Long)");
@@ -222,7 +224,26 @@ public class NewType {
 		}
 		return "";
 	}
-
+	
+	private String generateToString(){
+		StringBuilder sb = new StringBuilder();
+		sb.append(ONE_TAB+"@Override\n");
+		sb.append(ONE_TAB+"public String toString(){\n");
+		sb.append(TWO_TABS).append("return ");
+		int i = 0;
+		for(Member member: members){
+			if(i == 0){
+				sb.append("\"");
+			}else{
+				sb.append(" + \", ");
+			}
+			i++;
+			sb.append(member.getDisplayName()).append(" = \" + ").append(member.getName());
+		}
+		sb.append(";\n");
+		sb.append(ONE_TAB+"}\n\n");
+		return sb.toString();
+	}
 	private String generateParcelableCode(Map<String,NewType> types) {
 		StringBuilder sb = new StringBuilder();
 

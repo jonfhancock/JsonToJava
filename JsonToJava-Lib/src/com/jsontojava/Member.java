@@ -12,6 +12,7 @@ public class Member {
 	private String mJsonField;
 	private String mType;
 	private String mName;
+	private String mDisplayName;
 
 	public static class Builder {
 		private static final Inflector mInflector = new Inflector();
@@ -20,6 +21,7 @@ public class Member {
 		private String mJsonField;
 		private String mType;
 		private String mName;
+		private String mDisplayName;
 		private boolean mPlural;
 
 		public Builder() {
@@ -35,9 +37,13 @@ public class Member {
 			if(mName != null){
 				mName = mInflector.pluralize(mName);
 			}
+			if(mDisplayName != null){
+				mDisplayName = mInflector.pluralize(mDisplayName);
+			}
 			return this;
 		}
 		public Member.Builder setName(String name) {
+			mDisplayName = mInflector.camelCase(name, false);
 			name = "m" + name;
 			if(mPlural){
 				mName = mInflector.pluralize(name);
@@ -77,10 +83,13 @@ public class Member {
 			member.setType(mType);
 			member.setFieldName(mFieldConstantName);
 			member.setJsonField(mJsonField);
+			member.setDisplayName(mDisplayName);
 			member.mModifiers = mModifiers;
 			return member;
 			
 		}
+
+
 
 
 	}
@@ -164,5 +173,12 @@ public class Member {
 
 	public void setName(String name) {
 		this.mName = name;
+	}
+	public String getDisplayName() {
+		return mDisplayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.mDisplayName = displayName;
 	}
 }

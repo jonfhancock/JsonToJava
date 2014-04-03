@@ -23,6 +23,7 @@ public class Main {
 	private static final String OPTION_ROOT = "class";
 	private static final String OPTION_GSON = "g";
 	private static final String OPTION_PARCELABLE = "p";
+	private static final String OPTION_TO_STRING = "s";
 
 
 	/**
@@ -46,6 +47,9 @@ public class Main {
 		if(cmd.hasOption(OPTION_PARCELABLE)){
 			jsonToJava.addOutputOption(OutputOption.PARCELABLE);
 		}
+		if(cmd.hasOption(OPTION_TO_STRING)){
+			jsonToJava.addOutputOption(OutputOption.TO_STRING);
+		}
 		
 		jsonToJava.fetchJson();
 		File zipFile = new File(jsonToJava.getPackage() + ".zip");
@@ -65,6 +69,7 @@ public class Main {
 		Options options = new Options();
 		options.addOption(OPTION_PARCELABLE, false, "Enabled implementation of Parcelable for all classes generated");
 		options.addOption(OPTION_GSON,false,"Enables Gson annotations");
+		options.addOption(OPTION_TO_STRING, false, "Enables overriding the toString method for new classes");
 		Option rootClass = OptionBuilder.hasArg().isRequired().withDescription("The name of the root class of the feed you are parsing").create(OPTION_ROOT);
 		options.addOption(rootClass);
 		Option url = OptionBuilder.hasArg().isRequired().withDescription("The url of the json feed you want to parse").create(OPTION_URL);
