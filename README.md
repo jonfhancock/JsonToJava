@@ -11,6 +11,7 @@ Give it:
 <li>the name of the base class to start with.</li>
 <li>optionally, the p option will make your classes parcelable.</li>
 <li>optionally, the g option will give your classes gson annotations for serialization.</li>
+<li>optionally, the s option will override the toString method.</li>
 </ul>
 
 
