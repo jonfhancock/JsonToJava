@@ -35,7 +35,6 @@ If a member called "mId" or "mUniqueId" is found, then equals and hashcode will 
 
 <h3>What I want this tool to do in the future in no particular order</h3>
 <ul>
-<li>Work as an App Engine app</li>
 <li>Accept either a url or a block of json pasted in a text box</li>
 <li>Extract superclasses</li>
 <li>Accept multiple urls to build up the whole model</li>
