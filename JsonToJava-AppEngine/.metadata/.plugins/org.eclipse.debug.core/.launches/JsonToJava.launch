@@ -15,7 +15,7 @@
 <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
 <stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="com.google.gdt.eclipse.suite.appengineClasspathProvider"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="com.google.appengine.tools.development.DevAppServerMain"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--port=8888 /Users/jonfhancock/Documents/jtj_repo/JsonToJava/JsonToJava-AppEngine/war"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--port=8888 /Users/jonhancock/JsonToJava/JsonToJava-AppEngine/war"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="JsonToJava-AppEngine"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-javaagent:/Users/jonfhancock/apps/Eclipse/plugins/com.google.appengine.eclipse.sdkbundle_1.8.5/appengine-java-sdk-1.8.5/lib/agent/appengine-agent.jar -Ddatastore.default_high_rep_job_policy_unapplied_job_pct=50 -Xmx512m -Xbootclasspath/p:/Users/jonfhancock/apps/Eclipse/plugins/com.google.appengine.eclipse.sdkbundle_1.8.5/appengine-java-sdk-1.8.5/lib/override/appengine-dev-jdk-overrides.jar"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-javaagent:/Users/jonhancock/apps/Eclipse/plugins/com.google.appengine.eclipse.sdkbundle_1.8.5/appengine-java-sdk-1.8.5/lib/agent/appengine-agent.jar -Ddatastore.default_high_rep_job_policy_unapplied_job_pct=50 -Xmx512m -Xbootclasspath/p:/Users/jonfhancock/apps/Eclipse/plugins/com.google.appengine.eclipse.sdkbundle_1.8.5/appengine-java-sdk-1.8.5/lib/override/appengine-dev-jdk-overrides.jar"/>
 </launchConfiguration>

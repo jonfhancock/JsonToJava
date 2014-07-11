@@ -39,20 +39,23 @@ public class TypeUtils {
 			clazz = TYPE_DOUBLE;
 		}
 		if (clazz.equals(TYPE_STRING)) {
-
-			try {
-				long l = Long.parseLong((String) current);
-				clazz = TYPE_LONG;
-
-				if (Math.abs(l) < Integer.MAX_VALUE / 2) {
-					clazz = TYPE_INTEGER;
-				}
-			} catch (NumberFormatException e) {
+			if(((String) current).matches("^[0-9]+(\\.[0-9]+)?$")){
 				try {
-					Double.parseDouble((String) current);
-					clazz = TYPE_DOUBLE;
-				} catch (NumberFormatException e2) {
-
+					
+					long l = Long.parseLong((String) current);
+					
+					clazz = TYPE_LONG;
+	
+					if (Math.abs(l) < Integer.MAX_VALUE / 2) {
+						clazz = TYPE_INTEGER;
+					}
+				} catch (NumberFormatException e) {
+					try {
+						Double.parseDouble((String) current);
+						clazz = TYPE_DOUBLE;
+					} catch (NumberFormatException e2) {
+	
+					}
 				}
 			}
 
@@ -73,22 +76,24 @@ public class TypeUtils {
 			clazz = PRIMITIVE_DOUBLE;
 		}
 		if (clazz.equals(TYPE_STRING)) {
-			try {
-				long l = Long.parseLong((String) current);
-				clazz = PRIMITIVE_LONG;
+			if(((String) current).matches("^[0-9]+(\\.[0-9]+)?$")){
 
-				if (Math.abs(l) < Integer.MAX_VALUE / 2) {
-					clazz = PRIMITIVE_INT;
-				}
-			} catch (NumberFormatException e) {
 				try {
-					Double.parseDouble((String) current);
-					clazz = PRIMITIVE_DOUBLE;
-				} catch (NumberFormatException e2) {
-
+					long l = Long.parseLong((String) current);
+					clazz = PRIMITIVE_LONG;
+	
+					if (Math.abs(l) < Integer.MAX_VALUE / 2) {
+						clazz = PRIMITIVE_INT;
+					}
+				} catch (NumberFormatException e) {
+					try {
+						Double.parseDouble((String) current);
+						clazz = PRIMITIVE_DOUBLE;
+					} catch (NumberFormatException e2) {
+	
+					}
 				}
 			}
-
 		}
 		return clazz;
 	}
