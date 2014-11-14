@@ -233,16 +233,17 @@ public class JsonToJava {
 		typeBuilder.setPackage(mPackage).setName(typeName);
 
 		String[] keys = JSONObject.getNames(obj);
-
-		for (String s : keys) {
-			Object current = obj.opt(s);
-			Member m = generateMember(s, current);
-			typeBuilder.addMember(m);
-			if (current instanceof JSONArray) {
-				typeBuilder.addImport(NewType.IMPORT_JAVA_UTIL_LIST);
-
+		if(keys != null){
+			for (String s : keys) {
+				Object current = obj.opt(s);
+				Member m = generateMember(s, current);
+				typeBuilder.addMember(m);
+				if (current instanceof JSONArray) {
+					typeBuilder.addImport(NewType.IMPORT_JAVA_UTIL_LIST);
+	
+				}
+	
 			}
-
 		}
 		return typeBuilder.build();
 	}
