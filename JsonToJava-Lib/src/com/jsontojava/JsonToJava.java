@@ -153,7 +153,12 @@ public class JsonToJava {
 		Member.Builder memberBuilder = new Member.Builder();
 
 		String singular = mInflector.singularize(key);
-		String className = mInflector.camelCase(singular, true, '_', '.', '-',' ');
+		if(singular.contains("$")){
+			
+			singular = singular.split("\\$")[1];
+			
+		}
+		String className = mInflector.camelCase(singular, true, '_', '.', '-',' ','$');
 		memberBuilder.setJsonField(key).setName(className);
 
 		if (current instanceof JSONArray) {
