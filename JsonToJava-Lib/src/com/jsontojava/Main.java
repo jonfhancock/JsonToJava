@@ -10,6 +10,32 @@ public class Main {
 	private static final String OPTION_PARCELABLE = "p";
 
 
+
+//	/**
+//	 * @param args
+//	 * @throws IOException
+//	 */
+//	public static void main(String[] args) throws IOException {
+//
+//		JsonToJava jsonToJava = new JsonToJava();
+//
+//
+//
+//		jsonToJava.setUrl("http://pastebin.com/raw/LxguVT6c");
+//		jsonToJava.setPackage("me.pushapp.bito.model");
+//		jsonToJava.setBaseType("User");
+//		jsonToJava.addOutputOption(OutputOption.LOGANSQUARE);
+//		jsonToJava.addOutputOption(OutputOption.GSON);
+//		jsonToJava.addOutputOption(OutputOption.PARCELABLE);
+//		jsonToJava.addOutputOption(OutputOption.TO_STRING);
+//
+//		jsonToJava.fetchJson();
+//		FileOutputStream outputStream = new FileOutputStream(jsonToJava.getPackage() + ".zip");
+//		jsonToJava.outputZipFile(outputStream);
+//
+//
+//	}
+
 //	/**
 //	 * @param args
 //	 * @throws IOException

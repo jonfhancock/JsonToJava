@@ -17,6 +17,11 @@ public class NewType {
 	public static final String IMPORT_ANDROID_OS_PARCELABLE = "android.os.Parcelable";
 	public static final String IMPORT_ANDROID_OS_PARCEL = "android.os.Parcel";
 	public static final String IMPORT_GSON_SERIALIZED_NAME = "com.google.gson.annotations.SerializedName";
+	public static final String IMPORT_LOGANSQUARE_OBJECT = "com.bluelinelabs.logansquare.annotation.JsonObject";
+	public static final String IMPORT_LOGANSQUARE_FIELD = "com.bluelinelabs.logansquare.annotation.JsonField";
+
+
+
 	public String name;
 	public String pack;
 	public Set<String> imports;
@@ -132,6 +137,10 @@ public class NewType {
 		if (options.contains(OutputOption.GSON)) {
 			imports.add(IMPORT_GSON_SERIALIZED_NAME);
 		}
+		if (options.contains(OutputOption.LOGANSQUARE)){
+			imports.add(IMPORT_LOGANSQUARE_FIELD);
+			imports.add(IMPORT_LOGANSQUARE_OBJECT);
+		}
 		StringBuilder sBuilder = new StringBuilder();
 
 		sBuilder.append("package ").append(pack).append(";\n\n");
@@ -139,6 +148,9 @@ public class NewType {
 			sBuilder.append("import ").append(s).append(";\n");
 		}
 		sBuilder.append("\n\n");
+		if (options.contains(OutputOption.LOGANSQUARE))
+			sBuilder.append("@JsonObject\n");
+
 		sBuilder.append("public class ").append(name);
 		if (options.contains(OutputOption.PARCELABLE)) {
 			sBuilder.append(" implements Parcelable");
@@ -160,6 +172,9 @@ public class NewType {
 		for (Member member : members) {
 			if (options.contains(OutputOption.GSON)) {
 				sBuilder.append(ONE_TAB+"@SerializedName(" + member.getFieldName() + ")\n");
+			}
+			if (options.contains(OutputOption.LOGANSQUARE)) {
+				sBuilder.append(ONE_TAB+"@JsonField(name = " + member.getFieldName() + ")\n");
 			}
 			sBuilder.append(ONE_TAB+"private " + member.getType() + " " + member.getName() + ";").append("\n");
 		}
